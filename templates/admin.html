@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Football Auction Admin</title>
+  <link rel="stylesheet" href="/static/stylead.css">
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+  <div class="admin-container">
+    <h1>Admin Control Panel</h1>
+
+    <!-- Next Player Button -->
+    <button id="nextBtn">Next Bid</button>
+
+    <!-- Team Bidding Buttons -->
+    <div class="team-buttons">
+      {% for i in range(6) %}
+      <button class="team-btn" data-team="{{ i+1 }}">
+        <img src="/static/images/team{{ i+1 }}.png" alt="Team {{ i+1 }}">
+      </button>
+      {% endfor %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions">
+      <button id="soldBtn">SOLD</button>
+      <button id="unsoldBtn">UNSOLD</button>
+      <button id="undoBtn">UNDO</button>
+    </div>
+  </div>
+
+  <script>
+    const socket = io();
+    const nextBtn = document.getElementById("nextBtn");
+    const teamBtns = document.querySelectorAll(".team-btn");
+    const soldBtn = document.getElementById("soldBtn");
+    const unsoldBtn = document.getElementById("unsoldBtn");
+    const undoBtn = document.getElementById("undoBtn");
+
+    let currentBid = 100;
+    let biddingStarted = false;
+    let currentTeam = null;
+
+    // Start Spinner
+    nextBtn.addEventListener("click", () => {
+      currentBid = 100;
+      biddingStarted = false;
+      currentTeam = null;
+      socket.emit("next_player");
+    });
+
+     // Team Bidding
+    teamBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const teamId = btn.dataset.team;
+        if (!biddingStarted) {
+          // First call: set team, keep bid at 100
+          biddingStarted = true;
+        } else {
+          // Increase bid based on ranges
+          if (currentBid < 200) currentBid += 10;
+          else if (currentBid < 300) currentBid += 20;
+          else if (currentBid < 420) currentBid += 30;
+          else if (currentBid < 500) currentBid += 40;
+          else if (currentBid < 600) currentBid += 50;
+          else if (currentBid < 720) currentBid += 60;
+          else if (currentBid < 860) currentBid += 70;
+          else if (currentBid < 940) currentBid += 80;
+          else if (currentBid < 1030) currentBid += 90;
+          else if (currentBid < 1130) currentBid += 100;
+          else if (currentBid < 1240) currentBid += 110;
+          else if (currentBid < 1360) currentBid += 120;
+          else if (currentBid < 1490) currentBid += 130;
+          else if (currentBid < 1630) currentBid += 140;
+          else if (currentBid < 1780) currentBid += 150;
+          else if (currentBid < 1940) currentBid += 160;
+          else if (currentBid < 2110) currentBid += 170;
+          else currentBid += 180; // Continue with 120 increment for bids >= 1240
+        }
+        currentTeam = teamId;
+        socket.emit("team_bid", {
+          current_bid: currentBid,
+          team_id: currentTeam
+        });
+      });
+    });
+
+    // Sold Button
+    soldBtn.addEventListener("click", () => {
+      if (!currentTeam) return alert("No team has bid yet!");
+      socket.emit("sold_player", {
+        team_id: currentTeam,
+        final_bid: currentBid
+      });
+      biddingStarted = false;
+    });
+
+    // Unsold Button
+    unsoldBtn.addEventListener("click", () => {
+      socket.emit("unsold_player");
+      biddingStarted = false;
+    });
+
+    // Undo Button
+    undoBtn.addEventListener("click", () => {
+      socket.emit("undo_bid");
+      currentBid = 100;
+      biddingStarted = false;
+      currentTeam = null;
+    });
+  </script>
+</body>
+</html>

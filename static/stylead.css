@@ -1,0 +1,89 @@
+/* /static/style.css */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #101820;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.admin-container {
+  background: #1e2a38;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 255, 128, 0.3);
+  text-align: center;
+  width: 90%;
+  max-width: 700px;
+}
+
+h1 {
+  margin-bottom: 30px;
+  color: #00ffcc;
+  font-size: 2.2rem;
+  text-shadow: 0 0 5px #00ffcc;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  margin: 10px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #00c896;
+  box-shadow: 0 0 10px rgba(0, 255, 128, 0.4);
+}
+
+button:hover {
+  background-color: #00a378;
+  transform: scale(1.05);
+}
+
+#nextBtn {
+  background-color: #0096ff;
+  box-shadow: 0 0 10px rgba(0, 150, 255, 0.4);
+}
+
+#nextBtn:hover {
+  background-color: #0073cc;
+}
+
+.actions {
+  margin-top: 30px;
+}
+
+.team-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.team-btn {
+  background-color: transparent;
+  border: 2px solid #00ffcc;
+  padding: 10px;
+  border-radius: 12px;
+  margin: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-btn img {
+  height: 60px;
+  width: 60px;
+  object-fit: contain;
+}
+
+.team-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px #00ffcc;
+}

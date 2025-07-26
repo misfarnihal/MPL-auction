@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Football Auction Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="main-header">
+    <img src="/static/images/lemac logo.png" alt="Left Logo" class="header-logo">
+    <h1 class="header-title">MANJACHOLA PREMIER LEAGUE</h1>
+    <img src="/static/images/mpl 8 logo.png" alt="Right Logo" class="header-logo">
+  </header>
+
+  <div class="viewer-container">
+    <!-- Spinner / Random Number Display -->
+    <div class="spinner-display" id="spinner">--</div>
+
+    <!-- Teams Container -->
+    <div class="teams-section">
+      {% for i in range(6) %}
+      <div class="team-card" id="team{{ i+1 }}">
+        <img src="/static/images/team{{ i+1 }}.png" class="team-logo" alt="Team {{ i+1 }}">
+        <p><strong>Remaining Points:</strong> <span id="points{{ i+1 }}">2500</span></p>
+        <p><strong>Signed Players:</strong> <span id="signed{{ i+1 }}">0</span></p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Player Info Popup -->
+    <div class="player-info" id="playerInfo">
+      <img id="playerImage" class="player-img" src="/static/images/${data.image}" alt="Player">
+      <div class="bid-box">
+        <p><strong>BASE PRICE:</strong> <span id="basePrice">100</span></p>
+        <p><strong>CURRENT BID:</strong> <span id="currentBid">100</span></p>
+        <p><strong>CURRENT TEAM:</strong> 
+          <img id="currentTeamLogo" src="" class="current-team-logo" alt="Team">
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div class="footer-contact">
+      <p>Contact Us</p>
+      <div class="footer-icons">
+        <img src="/static/images/website.png" alt="Website">
+        <img src="/static/images/instagram.png" alt="Instagram">
+        <img src="/static/images/youtube.png" alt="YouTube">
+      </div>
+    </div>
+    <p class="copyright">© 2025 Manjachola Premier League. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    const socket = io();
+    const spinner = document.getElementById("spinner");
+    const playerInfo = document.getElementById("playerInfo");
+
+    socket.on('start_spin', (data) => {
+      let count = 0;
+      const interval = setInterval(() => {
+        spinner.innerText = Math.floor(Math.random() * 36) + 1;
+        count++;
+        if (count > 20) {
+          clearInterval(interval);
+          spinner.innerText = data.number;
+          // Show player info after 2 seconds
+          setTimeout(() => {
+            document.getElementById("playerImage").src = `/static/images/${data.image}`;
+            playerInfo.style.display = 'flex';
+          }, 1500);
+        }
+      }, 100);
+    });
+
+    socket.on('update_bid', (data) => {
+      document.getElementById("currentBid").innerText = data.current_bid;
+      document.getElementById("currentTeamLogo").src = `/static/images/team${data.team_id}.png`;
+    });
+
+    socket.on('player_sold', (data) => {
+      const teamId = data.team_id;
+      const bid = data.final_bid;
+      const currentPoints = parseInt(document.getElementById("points" + teamId).innerText);
+      const currentSigned = parseInt(document.getElementById("signed" + teamId).innerText);
+      document.getElementById("points" + teamId).innerText = currentPoints - bid;
+      document.getElementById("signed" + teamId).innerText = currentSigned + 1;
+      playerInfo.style.display = "none";
+    });
+
+    socket.on('reset_bid', () => {
+      playerInfo.style.display = "none";
+    });
+
+    socket.on('restart_bid', () => {
+      document.getElementById("currentBid").innerText = "100";
+      document.getElementById("currentTeamLogo").src = "";
+    });
+  </script>
+</body>
+</html>
