@@ -7,9 +7,7 @@ socketio = SocketIO(app)
 
 # Configuration for specific player positions
 # Format: {position: player_number}
-fixed_positions = {
-     # On the 14th click of "Next Bid", select player 14
-}
+fixed_positions = {16: 2, 32: 21, 4: 11, 34: 20, 8: 25, 28: 27, 11: 32, 12: 23, 30: 5, 6: 19, 14: 17}   # On the 14th click of "Next Bid", select player 14
 
 available_players = list(range(1, 37))  # 1 to 36
 current_player = None
